@@ -12,6 +12,17 @@ class Employee:
     def __eq__(self, other):
         return self.daily_salary == other.daily_salary
 
+    def __lt__(self, other):
+        return self.daily_salary < other.daily_salary
+
+    def __gt__(self, other):
+        return self.daily_salary > other.daily_salary
+
+    def __le__(self, other):
+        return self.daily_salary <= other.daily_salary
+    def __ge__(self, other):
+        return self.daily_salary >= other.daily_salary
+
 
 class Recruiter(Employee):
     def work(self):
@@ -46,3 +57,5 @@ print(employee1 == employee2)
 print(employee1 == developer)
 print(recruiter == developer)
 print(employee2 == Employee("Маша Іванова", 350))
+print(employee1 < employee2)
+print(recruiter >= developer)
