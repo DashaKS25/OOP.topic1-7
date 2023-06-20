@@ -3,6 +3,7 @@ class Employee:
         self.name = name
         self.daily_salary = daily_salary
 
+
     def work(self):
         return "I come to the office."
 
