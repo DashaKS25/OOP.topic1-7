@@ -1,30 +1,25 @@
 import unittest
-import urllib.request
-from decorators import Candidate
+from decorators import CandidateGenerator, Candidate
 
-class CandidateTest(unittest.TestCase):
-    def setUp(self):
-        url = 'https://bitbucket.org/ivnukov/lesson2/raw/4f59074e6fbb552398f87636b5bf089a1618da0a/candidates.csv'
-        self.candidates = Candidate.generate_candidates(url)
-
-    def tearDown(self):
-
-        pass
-
-    def test_full_name(self):
-        candidate = self.candidates[0]
-        self.assertEqual(candidate.full_name, "Dasha Kovl")
-
+class TestCandidateGenerator(unittest.TestCase):
     def test_generate_candidates(self):
-        self.assertEqual(len(self.candidates), 2)
-        self.assertEqual(self.candidates[0].email, "dashyn@test.com")
-        self.assertEqual(self.candidates[1].main_skill_grade, "B")
+        file_path = 'https://bitbucket.org/ivnukov/lesson2/raw/4f59074e6fbb552398f87636b5bf089a1618da0a/candidates.csv'
+        candidates = CandidateGenerator.generate_candidates(file_path)
 
-    def test_tech_stack(self):
-        candidate = self.candidates[0]
-        self.assertEqual(candidate.tech_stack, ["Python", "JavaScript"])
+        self.assertEqual(len(candidates), 3)
 
+        expected_candidates = [
+            Candidate('Ivan', 'Chechov', 'ichech@example.com', ['Python', 'Django', 'Angular'], 'Python', 'Senior'),
+            Candidate('Max', 'Payne', 'mpayne@example.com', ['PHP', 'Laravel', 'MySQL'], 'PHP', 'Middle'),
+            Candidate('Tom', 'Hanks', 'thanks@example.com', ['Python', 'CSS'], 'Python', 'Junior')
+        ]
+
+        for i in range(len(candidates)):
+            self.assertEqual(candidates[i].first_name, expected_candidates[i].full_name)
+            self.assertEqual(candidates[i].email, expected_candidates[i].email)
+            self.assertEqual(candidates[i].tech_stack, expected_candidates[i].tech_stack)
+            self.assertEqual(candidates[i].main_skill, expected_candidates[i].main_skill)
+            self.assertEqual(candidates[i].main_skill_grade, expected_candidates[i].main_skill_grade)
 
 if __name__ == '__main__':
     unittest.main()
-
