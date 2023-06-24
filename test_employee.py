@@ -50,10 +50,6 @@ class EmployeeTest(unittest.TestCase):
         self.recruiter = Recruiter("Олексій Ковальов", 400)
         self.developer = Developer("Марина Власенко", 450)
 
-    def tearDown(self):
-
-        pass
-
     def test_work(self):
         self.assertEqual(self.employee1.work(), "I come to the office.")
         self.assertEqual(self.recruiter.work(), "I come to the office and start hiring.")

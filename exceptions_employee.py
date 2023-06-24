@@ -5,32 +5,61 @@ import traceback
 class EmailAlreadyExistsException(Exception):
     pass
 
+class Logger:
+    def __init__(self, log_file):
+        self.log_file = log_file
+
+    def write_log(self, error_message):
+        with open(self.log_file, 'a') as logfile:
+            logfile.write(error_message)
+
+def log_exceptions(log_file):
+    logger = Logger(log_file)
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except EmailAlreadyExistsException as e:
+                current_datetime = datetime.datetime.now()
+                formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+                error_message = f"{formatted_datetime} | {str(e)}\n"
+
+                traceback_info = traceback.format_exc()
+                error_message += traceback_info
+
+                logger.write_log(error_message)
+
+        return wrapper
+
+    return decorator
+
 class Employee:
-    def init(self, name, email, daily_salary):
+    def __init__(self, name, daily_salary):
         self.name = name
         self.daily_salary = daily_salary
-        self.email = email
+        self.email = ""
         self.save_email()
 
     def work(self):
         return "I come to the office."
 
-    def str(self):
+    def __str__(self):
         return f"Position: Employee, Name: {self.name}"
 
-    def eq(self, other):
+    def __eq__(self, other):
         return self.daily_salary == other.daily_salary
 
-    def lt(self, other):
+    def __lt__(self, other):
         return self.daily_salary < other.daily_salary
 
-    def gt(self, other):
+    def __gt__(self, other):
         return self.daily_salary > other.daily_salary
 
-    def le(self, other):
+    def __le__(self, other):
         return self.daily_salary <= other.daily_salary
 
-    def ge(self, other):
+    def __ge__(self, other):
         return self.daily_salary >= other.daily_salary
 
     def check_salary(self, days):
@@ -39,8 +68,6 @@ class Employee:
         return salary
 
     def _get_workdays(self):
-        import datetime
-
         today = datetime.date.today()
         start_of_month = datetime.date(today.year, today.month, 1)
 
@@ -58,54 +85,34 @@ class Employee:
             writer = csv.writer(csvfile)
             writer.writerow([self.email])
 
-    def validate(self):
-        try:
-            with open('emails.csv', 'r') as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    if self.email == row[0]:
-                        raise EmailAlreadyExistsException
-
-        except EmailAlreadyExistsException as e:
-            current_datetime = datetime.datetime.now()
-            formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-            error_message = f"{formatted_datetime} | {str(e)}\n"
-
-            traceback_info = traceback.format_exc()
-            error_message += traceback_info
-
-            with open('logs.txt', 'a') as logfile:
-                logfile.write(error_message)
-
-
 class Recruiter(Employee):
     def work(self):
         return "I come to the office and start hiring."
 
-    def str(self):
+    def __str__(self):
         return f"Position: Recruiter, Name: {self.name}"
 
-
 class Developer(Employee):
-    def init(self, name, daily_salary, tech_stack):
-        super().init(name, daily_salary)
+    def __init__(self, name, daily_salary, tech_stack):
+        super().__init__(name, daily_salary)
         self.tech_stack = tech_stack
 
     def work(self):
         return "I come to the office and start coding."
 
-    def str(self):
+    def __str__(self):
         return f"Position: Developer, Name: {self.name}"
 
-    def eq(self, other):
+    def __eq__(self, other):
         return len(self.tech_stack) == len(other.tech_stack)
 
     def add(self, other):
-        name = self.name + " " + other.name
-        tech_stack = list(set(self.tech_stack + other.tech_stack))
-        daily_salary = max(self.daily_salary, other.daily_salary)
-        return Developer(name, daily_salary, tech_stack)
-
+        def __add__(self, other):
+                if isinstance(other, Developer):
+                    name = self.name + " " + other.name
+                    tech_stack = list(set(self.tech_stack + other.tech_stack))
+                    daily_salary = max(self.daily_salary, other.daily_salary)
+                    return Developer(name, daily_salary, tech_stack)
 
 employee1 = Employee("Даша Петрова", 300)
 employee2 = Employee("Маша Іванова", 350)
@@ -129,5 +136,5 @@ print(recruiter == developer1)
 print(employee1.check_salary(15))
 print(developer1.check_salary(20))
 
-developer3 = developer1 + developer2
+developer3 = developer1.add(developer2)
 print(developer3)

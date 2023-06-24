@@ -1,5 +1,5 @@
 import unittest
-from Employee import Recruiter
+from employee import Recruiter
 
 class RecruiterTest(unittest.TestCase):
     def setUp(self):

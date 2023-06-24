@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from Employee import Developer
+from employee import Developer
 
 class DeveloperTest(unittest.TestCase):
     def setUp(self):
