@@ -85,6 +85,14 @@ class Employee:
             writer = csv.writer(csvfile)
             writer.writerow([self.email])
 
+    @log_exceptions('error_log.txt')
+    def validate(self):
+        with open('emails.csv', 'r') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if self.email == row[0]:
+                    raise EmailAlreadyExistsException
+
 class Recruiter(Employee):
     def work(self):
         return "I come to the office and start hiring."
